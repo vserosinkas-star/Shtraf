@@ -1,0 +1,51 @@
+<!-- templates/history.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>История штрафов — {{ vehicle[0] }} | Сбер</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="/" class="back-link">
+                <span class="material-icons">arrow_back</span> Назад
+            </a>
+            <h1>📜 Штрафы: {{ vehicle[0] }}</h1>
+            {% if vehicle[1] %}<p class="subtitle">{{ vehicle[1] }}</p>{% endif %}
+        </header>
+
+        {% if fines %}
+        <div class="fines-list">
+            {% for f in fines %}
+            <div class="fine-card">
+                <div class="fine-header">
+                    <span class="date">{{ f[0] }}</span>
+                    <span class="amount">{{ f[1] }} ₽</span>
+                </div>
+                <p class="fine-desc">{{ f[2] or 'Без описания' }}</p>
+                <div class="fine-actions">
+                    <a href="/pay/{{ f[5] }}" class="btn btn-pay">
+                        <span class="material-icons">payment</span> Оплатить
+                    </a>
+                    {% if f[3] %}
+                    <a href="{{ f[3] }}" target="_blank" class="btn btn-outline">
+                        <span class="material-icons">photo</span> Фото
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="material-icons">check_circle</span>
+            <p>Штрафов не найдено</p>
+        </div>
+        {% endif %} <!-- ⬅️ ЭТОТ ТЕГ БЫЛ УПУЩЕН! -->
+    </div>
+</body>
+</html>

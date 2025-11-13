@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Агент контроля штрафов</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .header-logo {
+      max-height: 60px; /* регулируйте по желанию */
+      width: auto;
+      margin: 0.5rem 0;
+      object-fit: contain;
+    }
+    header {
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .check-button {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .check-button:hover {
+      background-color: #e64a19;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Вкладки */
+    .tabs {
+      display: flex;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    section {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      margin-bottom: 1.2rem;
+      color: #1976d2;
+    }
+
+    /* Форма добавления */
+    .add-form-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .add-form-inline input {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.7rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .add-form-inline button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .add-form-inline button:hover {
+      background-color: #1565c0;
+    }
+
+    /* Таблицы */
+    .vehicles-table,
+    .fines-table,
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .vehicles-table th,
+    .vehicles-table td,
+    .fines-table th,
+    .fines-table td,
+    .history-table th,
+    .history-table td {
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .vehicles-table th,
+    .fines-table th,
+    .history-table th {
+      background-color: #f8f9fa;
+      color: #1976d2;
+      font-weight: 600;
+    }
+
+    .amount-paid {
+      color: #388e3c;
+    }
+
+    .amount-unpaid {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .status-paid {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .status-unpaid {
+      background-color: #ffebee;
+      color: #c62828;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* Действия */
+    .actions-cell {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-start;
+      white-space: nowrap;
+    }
+
+    .btn-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.35rem;
+      min-width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      gap: 0.3rem;
+    }
+
+    .btn-edit {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+    .btn-history {
+      background-color: #f1f8e9;
+      color: #388e3c;
+    }
+    .btn-delete {
+      background-color: #ffebee;
+      color: #d32f2f;
+    }
+
+    .btn-action:hover {
+      opacity: 0.9;
+    }
+
+    /* Мобильные */
+    @media (max-width: 650px) {
+      .btn-action {
+        padding: 0;
+        min-width: 32px;
+        width: 32px;
+        height: 32px;
+        font-size: 0;
+      }
+      .btn-action span:last-child {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .add-form-inline {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .add-form-inline button {
+        align-self: stretch;
+        text-align: center;
+      }
+      .tabs {
+        flex-direction: column;
+      }
+    }
+
+    /* Уведомление */
+    .alert {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-text">Агент контроля штрафов</div>
+	<img src="/static/logo.png" alt="Логотип" class="header-logo">
+    <form method="post" action="/check-now" style="margin: 0;">
+      <button type="submit" class="check-button">
+        <span class="material-icons">sync</span>
+        Проверить штрафы
+      </button>
+    </form>
+  </header>
+
+  <main>
+    <!-- Вкладки -->
+    <div class="tabs">
+      <div class="tab active" data-tab="fines">Штрафы</div>
+      <div class="tab" data-tab="transport">Транспорт</div>
+      <div class="tab" data-tab="history">История</div>
+    </div>
+
+<!-- Вкладка: Штрафы -->
+<div class="tab-content active" id="fines">
+  {% if fines_unpaid or fines_paid %}
+    {% if fines_unpaid %}
+    <section>
+      <h2>🚨 Неоплаченные штрафы ({{ fines_unpaid|length }})</h2>
+      <table class="fines-table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Авто</th>
+            <th>Описание</th>
+            <th>Сумма</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in fines_unpaid %}
+          <tr>
+            <td>{{ f[0] }}</td>
+            <td>{{ f[5] }}</td>
+            <td>{{ f[2] or '—' }}</td>
+            <td class="amount-unpaid">{{ f[1] }} ₽</td>
+            <td class="actions-cell">
+              {% if f[4] %}
+              <a href="{{ f[4] }}" target="_blank" class="btn-action btn-history" title="Постановление">
+                <span class="material-icons">description</span>
+                <span>Пост.</span>
+              </a>
+              {% endif %}
+              <a href="/pay/{{ f[3] }}" class="btn-action btn-history" title="Оплатить">
+                <span class="material-icons">payment</span>
+                <span>Опл.</span>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+
+    {% if fines_paid %}
+    <section>
+      <h2>✅ Оплаченные штрафы</h2>
+      <table class="fines-table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Авто</th>
+            <th>Описание</th>
+            <th>Сумма</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in fines_paid %}
+          <tr>
+            <td>{{ f.fine_date }}</td>
+            <td>{{ f.car_number }}</td>
+            <td>{{ f.description or '—' }}</td>
+            <td class="amount-paid">{{ f.fine_sum }} ₽</td>
+            <td><span class="status-paid">Оплачен</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+  {% else %}
+    <section>
+      <p>Нет штрафов.</p>
+    </section>
+  {% endif %}
+</div>
+    <!-- Вкладка: Транспорт -->
+    <div class="tab-content" id="transport">
+      <section>
+        <h2>➕ Добавить автомобиль</h2>
+        <form method="post" action="/add" class="add-form-inline">
+          <input type="text" name="car_number" placeholder="Номер авто (А123БВ777)" required>
+          <input type="text" name="sts_number" placeholder="СТС (серия и номер)" required>
+          <input type="email" name="email" placeholder="Email 1 (обязательный)" required>
+          <input type="email" name="email2" placeholder="Email 2 (необязательный)">
+          <input type="text" name="description" placeholder="Описание">
+          <button type="submit">Добавить</button>
+        </form>
+      </section>
+
+      {% if vehicles %}
+      <section>
+        <h2>🚗 Ваши автомобили ({{ vehicles|length }})</h2>
+        <table class="vehicles-table">
+          <thead>
+            <tr>
+              <th>Авто</th>
+              <th>СТС</th>
+              <th>Email</th>
+              <th>Описание</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in vehicles %}
+            <tr>
+              <td><strong>{{ v[1] }}</strong></td>
+              <td>{{ v[2] }}</td>
+              <td>
+                {{ v[3] }}<br>
+                {% if v[4] %}<small>{{ v[4] }}</small>{% endif %}
+              </td>
+              <td>{{ v[5] or '—' }}</td>
+              <td class="actions-cell">
+                <a href="/edit/{{ v[0] }}" class="btn-action btn-edit" title="Редактировать">
+                  <span class="material-icons">edit</span>
+                  <span>Ред.</span>
+                </a>
+                <a href="/history/{{ v[0] }}" class="btn-action btn-history" title="История">
+                  <span class="material-icons">history</span>
+                  <span>Ист.</span>
+                </a>
+                <form method="post" action="/delete/{{ v[0] }}" onsubmit="return confirm('Удалить?')" style="display:inline;">
+                  <button type="submit" class="btn-action btn-delete" title="Удалить">
+                    <span class="material-icons">delete</span>
+                    <span>Уд.</span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+    </div>
+
+    <!-- Вкладка: История -->
+    <div class="tab-content" id="history">
+      {% if all_fines %}
+      <section>
+        <h2>📜 История штрафов</h2>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Дата штрафа</th>
+              <th>Авто</th>
+              <th>Сумма</th>
+              <th>Статус</th>
+              <th>Обнаружен</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in all_fines %}
+            <tr>
+              <td>{{ f.fine_date }}</td>
+              <td>{{ f.car_number }}</td>
+              <td>{{ f.fine_sum }} ₽</td>
+              <td>
+                {% if f.is_paid %}
+                  <span class="status-paid">Оплачен</span>
+                {% else %}
+                  <span class="status-unpaid">Не оплачен</span>
+                {% endif %}
+              </td>
+              <td>{{ f.detected_at[:16].replace('T', ' ') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% else %}
+        <section>
+          <p>Нет данных.</p>
+        </section>
+      {% endif %}
+    </div>
+
+    <!-- Уведомление -->
+    {% if "manual" in request.query_params %}
+    <div class="alert">
+      <span class="material-icons">check_circle</span>
+      Проверка запущена. Новые штрафы придут на email.
+    </div>
+    {% endif %}
+  </main>
+
+  <footer>
+    &copy; 2025 Агент проверки штрафов. Все права защищены.
+  </footer>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

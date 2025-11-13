@@ -1,0 +1,36 @@
+<!-- templates/pay.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Оплата штрафа | Сбер</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <a href="/history/{{ fine_id }}" class="back-link">
+            <span class="material-icons">arrow_back</span> Назад к штрафу
+        </a>
+
+        <div class="card pay-card">
+            <h1>💳 Оплата штрафа</h1>
+            <p><strong>Авто:</strong> {{ car_number }}</p>
+            <p><strong>Дата:</strong> {{ date }}</p>
+            <p><strong>Сумма:</strong> <span class="amount">{{ amount }} ₽</span></p>
+            <p><strong>Описание:</strong> {{ description or '—' }}</p>
+
+            <div class="qr-section">
+                <h3>Отсканируйте QR-код</h3>
+                <img src="{{ qr_data }}" alt="QR для оплаты" class="qr-code">
+                <p class="qr-note">Работает в СберБанк Онлайн, Тинькофф, ВТБ и других банках с поддержкой СБП.</p>
+            </div>
+
+            <a href="{{ qr_url }}" target="_blank" class="btn btn-primary" style="margin-top: 20px;">
+                <span class="material-icons">open_in_new</span> Открыть в банке
+            </a>
+        </div>
+    </div>
+</body>
+</html>
