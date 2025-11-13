@@ -18,7 +18,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_PATH = "/data/vehicles.db"
+import os
+DB_PATH = os.getenv("RAILWAY_VOLUME_PATH", "vehicles.db")
 API_URL = "https://shtrafy-gibdd.ru/api/v1/fines"  # Убраны лишние пробелы
 EMAIL_LOGIN = os.getenv("EMAIL_LOGIN")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
@@ -443,4 +444,5 @@ async def vehicle_history(request: Request, vid: int):
         "request": request,
         "vehicle": vehicle,
         "fines": fines
+
     })
